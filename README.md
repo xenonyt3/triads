@@ -73,11 +73,38 @@ The installer writes to `$OPENCODE_CONFIG_DIR/agents` if that variable is set, o
 
 The agent files ship with the author's `9router` model ids; use your provider's id for the same model (run `opencode models` to list them).
 
-| | Agent | Job | Recommended model | Why |
-|---|---|---|---|---|
-| <img src="assets/helios.webp" width="120" alt="Helios"> | Helios | Plans, splits work, routes each unit by risk, reviews every diff. Never edits code. | **Claude Opus 5.5** (strongly advised) | Best overall in WorkflowArena: 36.95% resolved (max effort), 80.21 score (high effort). In the transfer test, where the planner writes the workflow but cannot touch the workspace (Helios's exact position), Opus-written workflows raised every one of four executor models: +6.41 points on average (static), +6.27 (dynamic). GPT-6 Astra, a strong coder on its own, averaged -2.53 / +1.34 in the same role: being good at the work is not the same as being good at organizing it. |
-| <img src="assets/gaia.webp" width="120" alt="Gaia"> | Gaia | Does sensitive units: auth, money, external input, secrets, dependencies, schemas. | **GPT-6 Astra** (medium effort, as shipped) | A strong solo executor: 28.11% resolved / 76.12 score at medium, 30.80% / 77.69 at xhigh; shares the top Enterprise Operations result (27.78%, high effort). Its weak result as a planner (above) is why it works under Helios rather than in his place. |
-| <img src="assets/selene.webp" width="120" alt="Selene"> | Selene | Does narrow, non-sensitive units. Stops and reports if a unit turns out to be sensitive; Helios then hands it to Gaia. | **DeepSeek V4.1 Flash** | Weakest alone (6.08% resolved, 34.48 score), but it gained the most in relative terms from good orchestration: 18.37 -> 25.24 with Opus dynamic workflows (+6.87, about +37%), while Astra static workflows dropped it to 12.85. Cheap worker + strong planner is the bet triads makes; Helios's routing keeps Selene away from anything where a silent mistake is costly. |
+<table>
+<tr>
+<td align="center" width="240"><img src="assets/helios.webp" width="220" alt="Helios"><br><sub><i>Sees everything. Touches nothing.</i></sub></td>
+<td>Plans, splits work, routes each unit by risk, reviews every diff. Never edits code. Best overall in WorkflowArena: 36.95% resolved (max effort), 80.21 score (high effort). In the transfer test, where the planner writes the workflow but cannot touch the workspace (Helios's exact position), Opus-written workflows raised every one of four executor models: +6.41 points on average (static), +6.27 (dynamic). GPT-6 Astra, a strong coder on its own, averaged -2.53 / +1.34 in the same role: being good at the work is not the same as being good at organizing it.</td>
+</tr>
+<tr><td colspan="2"><b>Role:</b> <code>Planner, router and reviewer</code></td></tr>
+<tr><td colspan="2"><b>Prompt:</b> <a href="agents/helios.md"><code>agents/helios.md</code></a></td></tr>
+<tr><td colspan="2"><b>Recommended model:</b> <code>Claude Opus 5.5 (strongly advised)</code></td></tr>
+<tr><td colspan="2"><b>Shipped as:</b> <code>9router/cc/claude-opus-5-5</code></td></tr>
+</table>
+
+<table>
+<tr>
+<td align="center" width="240"><img src="assets/gaia.webp" width="220" alt="Gaia"><br><sub><i>Holds what must not break.</i></sub></td>
+<td>Does sensitive units: auth, money, external input, secrets, dependencies, schemas. A strong solo executor: 28.11% resolved / 76.12 score at medium, 30.80% / 77.69 at xhigh; shares the top Enterprise Operations result (27.78%, high effort). Its weak result as a planner (above) is why it works under Helios rather than in his place.</td>
+</tr>
+<tr><td colspan="2"><b>Role:</b> <code>Worker for sensitive units</code></td></tr>
+<tr><td colspan="2"><b>Prompt:</b> <a href="agents/gaia.md"><code>agents/gaia.md</code></a></td></tr>
+<tr><td colspan="2"><b>Recommended model:</b> <code>GPT-6 Astra (medium)</code></td></tr>
+<tr><td colspan="2"><b>Shipped as:</b> <code>9router/cx/gpt-6-astra#medium</code></td></tr>
+</table>
+
+<table>
+<tr>
+<td align="center" width="240"><img src="assets/selene.webp" width="220" alt="Selene"><br><sub><i>Quiet work by night.</i></sub></td>
+<td>Does narrow, non-sensitive units. Stops and reports if a unit turns out to be sensitive; Helios then hands it to Gaia. Weakest alone (6.08% resolved, 34.48 score), but it gained the most in relative terms from good orchestration: 18.37 &rarr; 25.24 with Opus dynamic workflows (+6.87, about +37%), while Astra static workflows dropped it to 12.85. Cheap worker + strong planner is the bet triads makes; Helios's routing keeps Selene away from anything where a silent mistake is costly.</td>
+</tr>
+<tr><td colspan="2"><b>Role:</b> <code>Worker for narrow, non-sensitive units</code></td></tr>
+<tr><td colspan="2"><b>Prompt:</b> <a href="agents/selene.md"><code>agents/selene.md</code></a></td></tr>
+<tr><td colspan="2"><b>Recommended model:</b> <code>DeepSeek V4.1 Flash</code></td></tr>
+<tr><td colspan="2"><b>Shipped as:</b> <code>9router/ocg/deepseek-v4.1-flash</code></td></tr>
+</table>
 
 Numbers from [WorkflowArena: Benchmarking Executable Workflow Orchestration in LLM-Based Multi-Agent Systems](https://arxiv.org/abs/2611.12856) (Jiang et al., 2026), Table 1, Table 2 and the [project README](https://github.com/Einsia/WorkflowArena).
 
