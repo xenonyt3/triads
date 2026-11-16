@@ -36,12 +36,13 @@ param([switch]$Uninstall)
             if (-not $src -or -not (Test-Path -LiteralPath (Join-Path $src "$name.md") -PathType Leaf)) { $local = $false }
         }
         if (-not $local) {
+            [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
             $tempDir = Join-Path ([IO.Path]::GetTempPath()) ('triads-' + [guid]::NewGuid())
             New-Item -ItemType Directory -Path $tempDir | Out-Null
             $src = $tempDir
             foreach ($name in $names) {
                 try {
-                    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/xenonyt3/triads/main/agents/$name.md" -OutFile (Join-Path $src "$name.md") -ErrorAction Stop
+                    Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/xenonyt3/triads/main/agents/$name.md" -OutFile (Join-Path $src "$name.md") -ErrorAction Stop
                 } catch { throw "download $name.md failed: $($_.Exception.Message)" }
             }
         }
@@ -92,11 +93,15 @@ param([switch]$Uninstall)
                 try {
                     $models = (& opencode @flags models 2>&1) -join "`n"
                     if ($LASTEXITCODE -ne 0) { throw 'opencode models failed' }
+                    $warned = @{}
                     foreach ($name in $names) {
                         $text = Get-Content -LiteralPath (Join-Path $dest "$name.md") -Raw
                         if ($text -match '(?m)^model:\s*([^/\s]+)/') {
                             $provider = $Matches[1]
-                            if (-not $models.Contains("$provider/")) { Write-Warning "provider '$provider' not found in your OpenCode setup; see README `"Choose your models`"" }
+                            if (-not $models.Contains("$provider/") -and -not $warned.ContainsKey($provider)) {
+                                Write-Warning "provider '$provider' not found in your OpenCode setup; see README `"Choose your models`""
+                                $warned[$provider] = $true
+                            }
                         } else { Write-Warning "no model provider found in $name.md" }
                     }
                 } catch { Write-Warning "provider check failed: $($_.Exception.Message)" }
