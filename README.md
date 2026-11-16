@@ -1,6 +1,6 @@
 ![triads](assets/triads.webp)
 
-# Triads
+# 🔱 Triads (OpenCode Workflow)
 
 Three OpenCode agents that split work by **risk of undetected harm**, not by difficulty.
 
