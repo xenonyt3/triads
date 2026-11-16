@@ -1,5 +1,5 @@
 ---
-description: Low-cost worker for narrow, non-sensitive units.
+description: Selene. Low-cost worker for narrow, non-sensitive units.
 mode: subagent
 model: 9router/ocg/deepseek-v4.1-flash
 permissions:

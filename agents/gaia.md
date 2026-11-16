@@ -1,5 +1,5 @@
 ---
-description: High-class worker for sensitive units (auth, money, external input, secrets, dependencies, schemas) and escalations.
+description: Gaia. Worker for sensitive units (auth, money, external input, secrets, dependencies, schemas) and escalations.
 mode: subagent
 model: 9router/cx/gpt-6-astra#medium
 permissions:
