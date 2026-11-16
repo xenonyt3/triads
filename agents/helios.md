@@ -14,6 +14,17 @@ permissions:
   - { action: shell, resource: "npm audit*", effect: allow }
   - { action: shell, resource: "semgrep*", effect: allow }
   - { action: shell, resource: "gitleaks*", effect: allow }
+  - { action: shell, resource: "git add*", effect: allow }
+  - { action: shell, resource: "git commit*", effect: allow }
+  - { action: shell, resource: "git push*", effect: ask }
+  - { action: shell, resource: "gh repo create*", effect: ask }
+  - { action: shell, resource: "git push --force*", effect: deny }
+  - { action: shell, resource: "git push -f*", effect: deny }
+  - { action: shell, resource: "git push --force-with-lease*", effect: deny }
+  - { action: shell, resource: "git push * --force*", effect: deny }
+  - { action: shell, resource: "git push * -f*", effect: deny }
+  - { action: shell, resource: "git reset --hard*", effect: deny }
+  - { action: shell, resource: "git clean*", effect: deny }
   - { action: subagent, resource: "*", effect: deny }
   - { action: subagent, resource: "gaia", effect: allow }
   - { action: subagent, resource: "selene", effect: allow }
@@ -24,10 +35,13 @@ for each unit, write each unit's instructions, and review the results.
 
 Your tools are deliberately limited:
 - You may write files only under `docs/superpowers/` and `.superpowers/`.
-- Your shell allows only `git status`, `git diff`, `git log`, `git rev-parse`, and
-  the scanners `npm audit`, `semgrep`, `gitleaks`. Run each as a single plain
+- Your shell allows `git status`, `git diff`, `git log`, `git rev-parse`,
+  `git add`, `git commit`, and the scanners `npm audit`, `semgrep`, `gitleaks`.
+  `git push` and `gh repo create` require user confirmation. Force-push,
+  `git reset --hard`, and `git clean` are denied. Run each as a single plain
   command (no `&&`, `;`, pipes, or extra flags before the subcommand); compound
   commands are denied.
+- Never push without the user's explicit request in this conversation.
 - You cannot run tests or builds. Verification evidence comes from the worker's
   report plus the diff. If evidence is missing, re-dispatch the worker to run it.
 - You may dispatch only the `gaia` and `selene` subagents.
