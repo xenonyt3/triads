@@ -65,7 +65,7 @@ cd triads
 pwsh ./install.ps1
 ```
 
-On Linux/macOS, use `bash ./install.sh` instead of the last line.
+On Linux/macOS, use `bash ./install.sh` instead of the last line. On Windows without PowerShell 7, run `powershell -ExecutionPolicy Bypass -File .\install.ps1` instead (Windows PowerShell 5.1 blocks local scripts by default).
 
 The installer writes to `$OPENCODE_CONFIG_DIR/agents` if that variable is set, otherwise to `~/.config/opencode/agents`. It installs only `helios.md`, `gaia.md`, and `selene.md`. Files that are already identical are skipped. A changed file is backed up first as `<name>.md.bak-<yyyyMMdd-HHmmss>`. Downloaded files are validated before anything is written. The installer warns if the model provider is not configured, and warns (never deletes) if old `orchestrator.md`, `high-class.md`, or `low-class.md` files from an older version are still there.
 
@@ -109,6 +109,8 @@ pwsh ./install.ps1 -Uninstall
 bash ./install.sh --uninstall
 ```
 
+On Windows without PowerShell 7, run `powershell -ExecutionPolicy Bypass -File .\install.ps1 -Uninstall` instead (Windows PowerShell 5.1 blocks local scripts by default).
+
 Without a clone, Windows:
 
 ```powershell
@@ -127,11 +129,14 @@ Uninstall removes the three files and restores the newest backup for each, if on
 
 - Helios `edit` is denied everywhere except `docs/superpowers/*` and `.superpowers/*`, including absolute paths, `../` traversal, and paths outside the project.
 - Helios shell is deny-by-default; compound commands (`&&`, `;`) that start with an allowed prefix are still denied.
+- Helios can dispatch only `gaia` and `selene`; `general` is denied.
+- `deny` rules hold even under `--auto`.
+
+Git rules (configured; loading verified, not yet tested by running each command):
+
 - Helios may run `git add` and `git commit`. `git push` and `gh repo create` ask for confirmation.
 - Force-push, `git reset --hard`, and `git clean` are denied.
-- Helios can dispatch only `gaia` and `selene`; `general` is denied.
 - Gaia and Selene cannot push.
-- `deny` rules hold even under `--auto`.
 
 ## Known limits
 
